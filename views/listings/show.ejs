@@ -1,0 +1,78 @@
+<% layout('/layouts/boilerplate') %>
+<body>
+    <main class="main">
+        
+        <img src="<%= listing.image.url %>" alt="">
+        <h2><%= listing.title %></h2>
+        <p>Owned By : <%= listing.owner.username %></p>
+        <p> Description : <%= listing.description%></p>
+        <p>Location : <%= listing.location %></p>
+        <p>Country : <%= listing.country %></p>
+        <p>Price :₹ <strong><%= listing.price.toLocaleString("en-IN") %></strong></p>
+        <% if(currentUser && listing.owner._id.equals(currentUser._id)){ %>
+        <div class="action-btns">
+            <form method="get" action="/listings/search/<%= listing._id %>/edit">
+                <button class="new-listing edit-btn"> edit</button>
+            </form>
+            <form method="post" action="/listings/search/<%= listing._id %>/remove?_method=DELETE">
+                <button class="new-listing edit-btn"> Delete Listing</button>
+            </form>
+        </div>
+       <% } %>
+       <% if(currentUser){ %>
+        <div class="form-container">
+            <h2>Add Reivew</h2>
+            <form action="/listings/search/<%= listing._id %>/submit-review" method="post">
+                
+            <div class="form-group">
+                <label for="rating">Rating</label>
+                <fieldset class="starability-slot">
+                    <input type="radio" id="no-rate" class="input-no-rate" name="rating" value="1" checked aria-label="No rating." />
+                    <input type="radio" id="first-rate1" name="rating" value="1" />
+                    <label for="first-rate1" title="Terrible">1 star</label>
+                    <input type="radio" id="first-rate2" name="rating" value="2" />
+                    <label for="first-rate2" title="Not good">2 stars</label>
+                    <input type="radio" id="first-rate3" name="rating" value="3" />
+                    <label for="first-rate3" title="Average">3 stars</label>
+                    <input type="radio" id="first-rate4" name="rating" value="4" />
+                    <label for="first-rate4" title="Very good">4 stars</label>
+                    <input type="radio" id="first-rate5" name="rating" value="5" />
+                    <label for="first-rate5" title="Amazing">5 stars</label>
+                  </fieldset>
+            </div>
+            
+            <div class="form-group">
+                <label for="comment">Comment</label>
+                <textarea id="description" name="comment" placeholder="Enter the description" required></textarea>
+            </div>
+
+            <button type="submit">Submit Review</button>
+        </form>
+    </div>
+    <% } %>
+        <h4>Reviews</h4>
+        <% if (listing.reviews && listing.reviews.length > 0) { %>
+           
+                <!-- Loop through each review and display it -->
+               
+               <% for(re of listing.reviews){ %>
+                <div class="rating">
+                    <p><strong>Review By :</strong> <%= re.author.username %></p>
+                    <p class="starability-result" data-rating="<%= re.rating %>"></p>
+                    <p><strong>Review:</strong> <%= re.comment %></p>
+                    <% if(currentUser && re.author._id.equals(currentUser._id)){ %>
+                    <form method="post" action="/listings/search/<%= listing._id %>/delete-review/<%= re._id %>?_method=DELETE">
+                        <button class="new-listing edit-btn"> Delete</button>
+                    </form>
+                    <% } %>
+                </div>
+                <% } %>
+                
+        <% } else { %>
+            <p>No reviews available for this listing.</p>
+        <% } %>
+        
+       
+       
+    </main>
+</body>
